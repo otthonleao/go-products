@@ -1,0 +1,20 @@
+# Binários ou compilados
+/bin/
+*.exe
+*.out
+*.test
+
+# Dependências (caso não use Go Modules)
+vendor/
+
+# Arquivos temporários ou caches
+*.log
+*.cache
+
+# Configurações específicas do ambiente
+/configs/*.local.*
+/configs/*.secret.*
+
+# Outros arquivos do sistema
+.DS_Store
+Thumbs.db
