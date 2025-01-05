@@ -112,3 +112,24 @@ func TestUpdateProduct(t *testing.T) {
 	assert.Equal(t, product.Name, productFound.Name)
 	assert.Equal(t, product.Price, productFound.Price)
 }
+
+func TestDeleteProduct(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	db.AutoMigrate(&entity.Product{})
+
+	product, err := entity.NewProduct("Product Test to Delete", 10.00)
+	assert.NoError(t, err)
+	db.Create(product)
+
+	productDB := NewProduct(db)
+	err = productDB.Delete(product.ID.String())
+	assert.NoError(t, err)
+
+	productFound, err := productDB.FindByID(product.ID.String())
+	assert.Error(t, err)
+	assert.Nil(t, productFound)
+}
