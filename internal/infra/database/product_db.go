@@ -35,3 +35,12 @@ func (p *Product) FindAll(page, limit int, sort string) ([]entity.Product, error
 
 	return products, err
 }
+
+func (p *Product) FindByID(id string) (*entity.Product, error) {
+	var product entity.Product
+	err := p.DB.First(&product, "id = ?", id).Error
+	if err != nil {
+		return nil, err
+	}
+	return &product, nil
+}

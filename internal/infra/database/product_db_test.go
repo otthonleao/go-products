@@ -64,3 +64,25 @@ func TestFindAllProducts(t *testing.T) {
 	assert.Equal(t, "Product Test 21", products[0].Name)
 	assert.Equal(t, "Product Test 23", products[2].Name)
 }
+
+
+func TestFindProductByID(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	db.AutoMigrate(&entity.Product{})
+
+	product, err := entity.NewProduct("Product Test", 10)
+	assert.NoError(t, err)
+	db.Create(product)
+
+	productDB := NewProduct(db)
+	productFound, err := productDB.FindByID(product.ID.String())
+	assert.NoError(t, err)
+	assert.NotNil(t, productFound)
+	assert.Equal(t, product.ID, productFound.ID)
+	assert.Equal(t, product.Name, productFound.Name)
+	assert.Equal(t, product.Price, productFound.Price)
+}
