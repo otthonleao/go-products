@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/otthonleao/go-products.git/internal/dto"
@@ -61,6 +62,34 @@ func (handler *ProductHandler) GetProduct(response http.ResponseWriter, request 
 	response.Header().Set("Content-Type", "application/json")
 	response.WriteHeader(http.StatusOK)
 	json.NewEncoder(response).Encode(product)
+}
+
+func (handler *ProductHandler) GetProducts(response http.ResponseWriter, request *http.Request) {
+	
+	page := request.URL.Query().Get("page")
+	limit := request.URL.Query().Get("limit")
+
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		pageInt = 0
+	}
+
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		limitInt = 0
+	}
+
+	sort := request.URL.Query().Get("sort")
+
+	products, err := handler.productDB.FindAll(pageInt, limitInt, sort)
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	response.Header().Set("Content-Type", "application/json")
+	response.WriteHeader(http.StatusOK)
+	json.NewEncoder(response).Encode(products)
 }
 
 func (handler *ProductHandler) UpdateProduct(response http.ResponseWriter, request *http.Request) {

@@ -37,6 +37,7 @@ func main() {
 	// Register the handler
 	route.Post("/products", productHandler.Create)
 	route.Get("/products/{id}", productHandler.GetProduct)
+	route.Get("/products", productHandler.GetProducts)
 	route.Put("/products/{id}", productHandler.UpdateProduct)
 	route.Delete("/products/{id}", productHandler.DeleteProduct)
 
