@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
 	"github.com/otthonleao/go-products.git/configs"
 	"github.com/otthonleao/go-products.git/internal/entity"
 	"github.com/otthonleao/go-products.git/internal/infra/database"
@@ -29,6 +31,11 @@ func main() {
 	productDB := database.NewProduct(db)
 	productHandler := handlers.NewProductHandler(productDB)
 
+	// Inicializar roteador
+	route := chi.NewRouter()
+	route.Use(middleware.Logger)
+	route.Post("/products", productHandler.Create)
+
 	http.HandleFunc("/products", productHandler.Create)
-	http.ListenAndServe(":8000", nil)
+	http.ListenAndServe(":8000", route)
 }
