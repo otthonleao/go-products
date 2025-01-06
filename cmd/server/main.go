@@ -34,7 +34,9 @@ func main() {
 	// Inicializar roteador
 	route := chi.NewRouter()
 	route.Use(middleware.Logger)
+	// Register the handler
 	route.Post("/products", productHandler.Create)
+	route.Get("/products/{id}", productHandler.GetProduct)
 
 	http.HandleFunc("/products", productHandler.Create)
 	http.ListenAndServe(":8000", route)

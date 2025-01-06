@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/otthonleao/go-products.git/internal/dto"
 	"github.com/otthonleao/go-products.git/internal/entity"
 	"github.com/otthonleao/go-products.git/internal/infra/database"
@@ -40,4 +41,23 @@ func (handler *ProductHandler) Create(response http.ResponseWriter, request *htt
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+}
+
+func (handler *ProductHandler) GetProduct(response http.ResponseWriter, request *http.Request) {
+	id := chi.URLParam(request, "id")
+	
+	if id == "" {
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	product, err := handler.productDB.FindByID(id)
+	if err != nil {
+		response.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	response.Header().Set("Content-Type", "application/json")
+	response.WriteHeader(http.StatusOK)
+	json.NewEncoder(response).Encode(product)
 }
