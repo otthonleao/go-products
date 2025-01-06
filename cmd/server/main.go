@@ -31,6 +31,9 @@ func main() {
 	productDB := database.NewProduct(db)
 	productHandler := handlers.NewProductHandler(productDB)
 
+	userDB := database.NewUser(db)
+	userHandler := handlers.NewUserHandler(userDB)
+
 	// Inicializar roteador
 	route := chi.NewRouter()
 	route.Use(middleware.Logger)
@@ -41,6 +44,8 @@ func main() {
 	route.Put("/products/{id}", productHandler.UpdateProduct)
 	route.Delete("/products/{id}", productHandler.DeleteProduct)
 
-	http.HandleFunc("/products", productHandler.Create)
+	route.Post("/users", userHandler.Create)
+
+	// http.HandleFunc("/products", productHandler.Create)
 	http.ListenAndServe(":8000", route)
 }

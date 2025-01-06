@@ -3,7 +3,7 @@ package database
 import "github.com/otthonleao/go-products.git/internal/entity"
 
 type UserInterface interface {
-	Create(user *entity.User)
+	Create(user *entity.User) error
 	FindByEmail(email string) (*entity.User, error)
 }
 

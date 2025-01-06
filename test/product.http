@@ -29,3 +29,13 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:8000/products/f7ad97be-ab5a-43f3-aa69-5c29bf97a180
+
+### USER
+POST http://localhost:8000/users
+Content-Type: application/json
+
+{
+    "name": "Otthon Leão",
+    "email": "otthon@mail.com",
+    "password": "123456"
+}
