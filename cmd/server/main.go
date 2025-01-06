@@ -37,6 +37,7 @@ func main() {
 	// Register the handler
 	route.Post("/products", productHandler.Create)
 	route.Get("/products/{id}", productHandler.GetProduct)
+	route.Put("/products/{id}", productHandler.UpdateProduct)
 
 	http.HandleFunc("/products", productHandler.Create)
 	http.ListenAndServe(":8000", route)

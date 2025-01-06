@@ -8,6 +8,7 @@ import (
 	"github.com/otthonleao/go-products.git/internal/dto"
 	"github.com/otthonleao/go-products.git/internal/entity"
 	"github.com/otthonleao/go-products.git/internal/infra/database"
+	entityPkg "github.com/otthonleao/go-products.git/pkg/entity"
 )
 
 type ProductHandler struct {
@@ -60,4 +61,39 @@ func (handler *ProductHandler) GetProduct(response http.ResponseWriter, request 
 	response.Header().Set("Content-Type", "application/json")
 	response.WriteHeader(http.StatusOK)
 	json.NewEncoder(response).Encode(product)
+}
+
+func (handler *ProductHandler) UpdateProduct(response http.ResponseWriter, request *http.Request) {
+	id := chi.URLParam(request, "id")
+	
+	if id == "" {
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var product entity.Product
+
+	err := json.NewDecoder(request.Body).Decode(&product)
+	if err != nil {
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	product.ID, err = entityPkg.ParseID(id)
+	if err != nil {
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	_, err = handler.productDB.FindByID(id)
+	if err != nil {
+		response.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	err = handler.productDB.Update(&product)
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
