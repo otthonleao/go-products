@@ -97,3 +97,25 @@ func (handler *ProductHandler) UpdateProduct(response http.ResponseWriter, reque
 		return
 	}
 }
+
+func (handler *ProductHandler) DeleteProduct(response http.ResponseWriter, request *http.Request) {
+	
+	id := chi.URLParam(request, "id")
+	
+	if id == "" {
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	_, err := handler.productDB.FindByID(id)
+	if err != nil {
+		response.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	err = handler.productDB.Delete(id)
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}

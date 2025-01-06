@@ -38,6 +38,7 @@ func main() {
 	route.Post("/products", productHandler.Create)
 	route.Get("/products/{id}", productHandler.GetProduct)
 	route.Put("/products/{id}", productHandler.UpdateProduct)
+	route.Delete("/products/{id}", productHandler.DeleteProduct)
 
 	http.HandleFunc("/products", productHandler.Create)
 	http.ListenAndServe(":8000", route)
