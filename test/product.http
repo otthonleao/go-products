@@ -1,3 +1,17 @@
+### USER - GENERATE TOKEN
+POST http://localhost:8000/users/login
+Content-Type: application/json
+
+{
+    "email": "otthon@mail.com",
+    "password": "123456"
+}
+
+// Command to use SQLite database
+// sqllite3 cmd/server/test.db
+// SELECT * FROM products;
+
+###
 POST http://localhost:8000/products
 Content-Type: application/json
 
@@ -7,15 +21,12 @@ Content-Type: application/json
 }
 
 ###
-
-// Command to use SQLite database
-// sqllite3 cmd/server/test.db
-// SELECT * FROM products;
-
-GET http://localhost:8000/products/64db6ed6-8d5e-4674-813f-bc2ef8043f8f
+GET http://localhost:8000/products HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzczMDkzMjcsInN1YiI6ImRkNjE1MGNjLTkwN2EtNDUzYS1hYmYwLTg1MGVmMTY4NmU2ZSJ9.5ThqUWV7717T71OUYnTTY5ZGCHAeTU5lh0gxuJFzBKE
 
 ###
-GET http://localhost:8000/products HTTP/1.1
+GET http://localhost:8000/products/64db6ed6-8d5e-4674-813f-bc2ef8043f8f
+Authorization: Bearer 
 
 ###
 
@@ -29,19 +40,10 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:8000/products/f7ad97be-ab5a-43f3-aa69-5c29bf97a180
+Authorization: Bearer 
 
 ### USER
 POST http://localhost:8000/users
-Content-Type: application/json
-
-{
-    "name": "Otthon Leão",
-    "email": "otthon@mail.com",
-    "password": "123456"
-}
-
-### USER - GENERATE TOKEN
-POST http://localhost:8000/users/login
 Content-Type: application/json
 
 {
