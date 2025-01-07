@@ -27,7 +27,18 @@ func NewUserHandler(userDB database.UserInterface) *UserHandler {
 	}
 }
 
-
+// GetJWT godoc
+// @Summary     Get a user JWT
+// @Description Get a user with token JWT with 300 seconds of expiration
+// @Tags        users
+// @Accept      json
+// @Produce     json
+// @Param       request     body    dto.GetJWTInput     true    "User credentials"
+// @Success     200     {object}    dto.GetJWTOutput
+// @Failure     401     {object}    Error
+// @Failure     404		{object}	Error
+// @Failure     500     {object}    Error
+// @Router      /users/login    [post]
 func (handler *UserHandler) GetJWT(response http.ResponseWriter, request *http.Request) {
 	
 	jwt := request.Context().Value("jwt").(*jwtauth.JWTAuth)
@@ -37,18 +48,24 @@ func (handler *UserHandler) GetJWT(response http.ResponseWriter, request *http.R
 
 	err := json.NewDecoder(request.Body).Decode(&user)
 	if err != nil {
-		response.WriteHeader(http.StatusBadRequest)
+		response.WriteHeader(http.StatusNotFound)
+		err := Error{Message: err.Error()}
+		json.NewEncoder(response).Encode(err)
 		return
 	}
 
 	userRequest, err := handler.UserDB.FindByEmail(user.Email)
 	if err != nil {
 		response.WriteHeader(http.StatusBadRequest)
+		err := Error{Message: err.Error()}
+		json.NewEncoder(response).Encode(err)
 		return
 	}
 
 	if !userRequest.CheckPassword(user.Password) {
 		response.WriteHeader(http.StatusUnauthorized)
+		err := Error{Message: "Invalid credentials - password does not match"}
+		json.NewEncoder(response).Encode(err)
 		return
 	}
 
@@ -57,11 +74,7 @@ func (handler *UserHandler) GetJWT(response http.ResponseWriter, request *http.R
 		"exp": time.Now().Add(time.Hour * time.Duration(jwtExpiresIn)).Unix(),
 	})
 
-	accessToken := struct {
-		AccessToken string `json:"access_token"`
-	}{
-		AccessToken: tokenString,
-	}
+	accessToken := dto.GetJWTOutput{AccessToken: tokenString}
 	response.Header().Set("Content-Type", "application/json")
 	response.WriteHeader(http.StatusOK)
 	json.NewEncoder(response).Encode(accessToken)
