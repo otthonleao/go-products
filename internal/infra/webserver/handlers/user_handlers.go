@@ -11,6 +11,10 @@ import (
 	"github.com/otthonleao/go-products.git/internal/infra/database"
 )
 
+type Error struct {
+	Message string `json:"message"`
+}
+
 type UserHandler struct {
 	UserDB       database.UserInterface
 	Jwt          *jwtauth.JWTAuth
@@ -22,6 +26,7 @@ func NewUserHandler(userDB database.UserInterface) *UserHandler {
 		UserDB:       userDB,
 	}
 }
+
 
 func (handler *UserHandler) GetJWT(response http.ResponseWriter, request *http.Request) {
 	
@@ -62,6 +67,16 @@ func (handler *UserHandler) GetJWT(response http.ResponseWriter, request *http.R
 	json.NewEncoder(response).Encode(accessToken)
 }
 
+// Create user godoc
+// @Summary		Create a new user
+// @Description	Create a new user
+// @Tags		users
+// @Accept		json
+// @Produce		json
+// @Param		request		body	dto.CreateUserInput	true	"User request"
+// @Success		201
+// @Failure		500		{object}	Error
+// @Router		/users	[post]
 func (handler *UserHandler) Create(response http.ResponseWriter, request *http.Request) {
 	var user dto.CreateUserInput
 
@@ -74,12 +89,16 @@ func (handler *UserHandler) Create(response http.ResponseWriter, request *http.R
 	userRequest, err := entity.NewUser(user.Name, user.Email, user.Password)
 	if err != nil {
 		response.WriteHeader(http.StatusBadRequest)
+		error := Error{Message: err.Error()}
+		json.NewEncoder(response).Encode(error)
 		return
 	}
 
 	err = handler.UserDB.Create(userRequest)
 	if err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
+		error := Error{Message: err.Error()}
+		json.NewEncoder(response).Encode(error)
 		return
 	}
 	response.WriteHeader(http.StatusCreated)
