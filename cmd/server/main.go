@@ -6,6 +6,8 @@ import (
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/jwtauth"
+
 	"github.com/otthonleao/go-products.git/configs"
 	"github.com/otthonleao/go-products.git/internal/entity"
 	"github.com/otthonleao/go-products.git/internal/infra/database"
@@ -16,7 +18,7 @@ import (
 
 func main() {
 	// Carregar configurações
-	_, err := configs.LoadConfig(".");
+	configs, err := configs.LoadConfig(".")
 	if err != nil {
 		log.Fatalf("Erro ao carregar configurações: %v", err)
 	}
@@ -37,14 +39,23 @@ func main() {
 	// Inicializar roteador
 	route := chi.NewRouter()
 	route.Use(middleware.Logger)
+	route.Use(middleware.Recoverer)
+	route.Use(middleware.WithValue("jwt", configs.TokenAuth))
+	route.Use((middleware.WithValue("jwtExpiresIn", configs.JWTExpiresIn)))
+
 	// Register the handler
-	route.Post("/products", productHandler.Create)
-	route.Get("/products/{id}", productHandler.GetProduct)
-	route.Get("/products", productHandler.GetProducts)
-	route.Put("/products/{id}", productHandler.UpdateProduct)
-	route.Delete("/products/{id}", productHandler.DeleteProduct)
+	route.Route("/products", func(chiRoute chi.Router) {
+		chiRoute.Use(jwtauth.Verifier(configs.TokenAuth))
+		chiRoute.Use(jwtauth.Authenticator)
+		chiRoute.Post("/", productHandler.Create)
+		chiRoute.Get("/{id}", productHandler.GetProduct)
+		chiRoute.Get("/", productHandler.GetProducts)
+		chiRoute.Put("/{id}", productHandler.UpdateProduct)
+		chiRoute.Delete("/{id}", productHandler.DeleteProduct)
+	})
 
 	route.Post("/users", userHandler.Create)
+	route.Post("/users/login", userHandler.GetJWT)
 
 	// http.HandleFunc("/products", productHandler.Create)
 	http.ListenAndServe(":8000", route)
