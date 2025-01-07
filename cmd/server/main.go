@@ -31,7 +31,7 @@ import (
 // @license.url		http://mit.com
 
 // @host						localhost:8000
-// @BasePath					/api/v1
+// @BasePath					/
 // @securityDefinitions.apikey	ApiKeyAuth
 // @in							header
 // @name						Authorization
