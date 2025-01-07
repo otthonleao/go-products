@@ -9,30 +9,32 @@ import (
 	"github.com/go-chi/jwtauth"
 
 	"github.com/otthonleao/go-products.git/configs"
+	_ "github.com/otthonleao/go-products.git/docs"
 	"github.com/otthonleao/go-products.git/internal/entity"
 	"github.com/otthonleao/go-products.git/internal/infra/database"
 	"github.com/otthonleao/go-products.git/internal/infra/webserver/handlers"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-// @title Go Products API
-// @version 1.0
-// @description Product API with authentication in GO
-// @termsOfService http://swagger.io/terms/
+// @title			Go Products API
+// @version			1.0
+// @description		Product API with authentication in GO
+// @termsOfService	http://swagger.io/terms/
 
-// @contact.name Otthon Leão
-// @contact.url http://meusite.com
-// @contact.email otthonleao@hotmail.com
+// @contact.name	Otthon Leão
+// @contact.url		http://meusite.com
+// @contact.email	otthonleao@hotmail.com
 
-// @license.name MIT
-// @license.url http://mit.com
+// @license.name	MIT
+// @license.url		http://mit.com
 
-// @host localhost:8000
-// @BasePath /api/v1
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
+// @host						localhost:8000
+// @BasePath					/api/v1
+// @securityDefinitions.apikey	ApiKeyAuth
+// @in							header
+// @name						Authorization
 func main() {
 	// Carregar configurações
 	configs, err := configs.LoadConfig(".")
@@ -73,6 +75,10 @@ func main() {
 
 	route.Post("/users", userHandler.Create)
 	route.Post("/users/login", userHandler.GetJWT)
+
+	// Subindo a documentação do webservice
+	route.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/swagger/doc.json")))
+
 
 	// http.HandleFunc("/products", productHandler.Create)
 	http.ListenAndServe(":8000", route)
