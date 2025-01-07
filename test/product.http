@@ -39,3 +39,13 @@ Content-Type: application/json
     "email": "otthon@mail.com",
     "password": "123456"
 }
+
+### USER - GENERATE TOKEN
+POST http://localhost:8000/users/login
+Content-Type: application/json
+
+{
+    "name": "Otthon Leão",
+    "email": "otthon@mail.com",
+    "password": "123456"
+}

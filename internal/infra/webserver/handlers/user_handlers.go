@@ -3,20 +3,61 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
+	"github.com/go-chi/jwtauth"
 	"github.com/otthonleao/go-products.git/internal/dto"
 	"github.com/otthonleao/go-products.git/internal/entity"
 	"github.com/otthonleao/go-products.git/internal/infra/database"
 )
 
 type UserHandler struct {
-	UserDB database.UserInterface
+	UserDB       database.UserInterface
+	Jwt          *jwtauth.JWTAuth
+	JwtExpiresIn int
 }
 
-func NewUserHandler(userDB database.UserInterface) *UserHandler {
+func NewUserHandler(userDB database.UserInterface, jwt *jwtauth.JWTAuth, JwtExpiresIn int) *UserHandler {
 	return &UserHandler{
-		UserDB: userDB,
+		UserDB:       userDB,
+		Jwt:          jwt,
+		JwtExpiresIn: JwtExpiresIn,
 	}
+}
+
+func (handler *UserHandler) GetJWT(response http.ResponseWriter, request *http.Request) {
+	var user dto.GetJWTInput
+
+	err := json.NewDecoder(request.Body).Decode(&user)
+	if err != nil {
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	userRequest, err := handler.UserDB.FindByEmail(user.Email)
+	if err != nil {
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if !userRequest.CheckPassword(user.Password) {
+		response.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	_, tokenString, _ := handler.Jwt.Encode(map[string]interface{}{
+		"sub": userRequest.ID.String(),
+		"exp": time.Now().Add(time.Hour * time.Duration(handler.JwtExpiresIn)).Unix(),
+	})
+
+	accessToken := struct {
+		AccessToken string `json:"access_token"`
+	}{
+		AccessToken: tokenString,
+	}
+	response.Header().Set("Content-Type", "application/json")
+	response.WriteHeader(http.StatusOK)
+	json.NewEncoder(response).Encode(accessToken)
 }
 
 func (handler *UserHandler) Create(response http.ResponseWriter, request *http.Request) {

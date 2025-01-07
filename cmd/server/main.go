@@ -16,7 +16,7 @@ import (
 
 func main() {
 	// Carregar configurações
-	_, err := configs.LoadConfig(".");
+	configs, err := configs.LoadConfig(".");
 	if err != nil {
 		log.Fatalf("Erro ao carregar configurações: %v", err)
 	}
@@ -32,7 +32,7 @@ func main() {
 	productHandler := handlers.NewProductHandler(productDB)
 
 	userDB := database.NewUser(db)
-	userHandler := handlers.NewUserHandler(userDB)
+	userHandler := handlers.NewUserHandler(userDB, configs.TokenAuth, configs.JWTExpiresIn)
 
 	// Inicializar roteador
 	route := chi.NewRouter()
@@ -45,6 +45,7 @@ func main() {
 	route.Delete("/products/{id}", productHandler.DeleteProduct)
 
 	route.Post("/users", userHandler.Create)
+	route.Post("/users/login", userHandler.GetJWT)
 
 	// http.HandleFunc("/products", productHandler.Create)
 	http.ListenAndServe(":8000", route)
