@@ -1,0 +1,21 @@
+basePath: /api/v1
+host: localhost:8000
+info:
+  contact:
+    email: otthonleao@hotmail.com
+    name: Otthon Leão
+    url: http://meusite.com
+  description: Product API with authentication in GO
+  license:
+    name: MIT
+    url: http://mit.com
+  termsOfService: http://swagger.io/terms/
+  title: Go Products API
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

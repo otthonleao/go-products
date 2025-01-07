@@ -16,6 +16,23 @@ import (
 	"gorm.io/gorm"
 )
 
+// @title Go Products API
+// @version 1.0
+// @description Product API with authentication in GO
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name Otthon Leão
+// @contact.url http://meusite.com
+// @contact.email otthonleao@hotmail.com
+
+// @license.name MIT
+// @license.url http://mit.com
+
+// @host localhost:8000
+// @BasePath /api/v1
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	// Carregar configurações
 	configs, err := configs.LoadConfig(".")

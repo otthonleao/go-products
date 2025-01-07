@@ -1,0 +1,28 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Product API with authentication in GO",
+        "title": "Go Products API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Otthon Leão",
+            "url": "http://meusite.com",
+            "email": "otthonleao@hotmail.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "http://mit.com"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8000",
+    "basePath": "/api/v1",
+    "paths": {},
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
