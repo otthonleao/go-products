@@ -79,7 +79,6 @@ func main() {
 	// Subindo a documentação do webservice
 	route.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/swagger/doc.json")))
 
-
 	// http.HandleFunc("/products", productHandler.Create)
 	http.ListenAndServe(":8000", route)
 }
